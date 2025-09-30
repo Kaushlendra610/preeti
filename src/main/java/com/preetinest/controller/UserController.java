@@ -1,6 +1,6 @@
 package com.preetinest.controller;
 
-import com.preetinest.entity.User;
+import com.preetinest.dto.request.UserRequestDTO;
 import com.preetinest.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -25,16 +26,15 @@ public class UserController {
         this.userService = userService;
     }
 
-
     @PostMapping
     @Operation(summary = "Create a new user", description = "Creates a new user with the provided details")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid user data")
     })
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        User createdUser = userService.createUser(user);
-        return ResponseEntity.ok(createdUser);
+    public ResponseEntity<Map<String, Object>> createUser(@Valid @RequestBody UserRequestDTO requestDTO) {
+        Map<String, Object> response = userService.createUser(requestDTO);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
@@ -43,19 +43,21 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User found"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/uuid/{uuid}")
+
+
     @Operation(summary = "Get user by UUID", description = "Retrieves a user by their UUID if not deleted")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User found"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<User> getUserByUuid(@PathVariable String uuid) {
+    public ResponseEntity<Map<String, Object>> getUserByUuid(@PathVariable String uuid) {
         return userService.getUserByUuid(uuid)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -64,7 +66,7 @@ public class UserController {
     @GetMapping
     @Operation(summary = "Get all active users", description = "Retrieves a list of all active users")
     @ApiResponse(responseCode = "200", description = "List of active users")
-    public ResponseEntity<List<User>> getAllActiveUsers() {
+    public ResponseEntity<List<Map<String, Object>>> getAllActiveUsers() {
         return ResponseEntity.ok(userService.getAllActiveUsers());
     }
 
@@ -75,9 +77,9 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "400", description = "Invalid user data")
     })
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
-        User updatedUser = userService.updateUser(id, user);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<Map<String, Object>> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDTO requestDTO) {
+        Map<String, Object> response = userService.updateUser(id, requestDTO);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
@@ -86,8 +88,8 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "User deleted successfully"),
             @ApiResponse(responseCode = "404", description = "User not found")
     })
-    public ResponseEntity<Void> softDeleteUser(@PathVariable Long id) {
-        userService.softDeleteUser(id);
+    public ResponseEntity<Void> softDeleteUser(@PathVariable Long id, @RequestParam Long userId) {
+        userService.softDeleteUser(id, userId);
         return ResponseEntity.noContent().build();
     }
 }

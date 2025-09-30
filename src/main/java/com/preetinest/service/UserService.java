@@ -1,15 +1,16 @@
 package com.preetinest.service;
 
-import com.preetinest.entity.User;
+import com.preetinest.dto.request.UserRequestDTO;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface UserService {
-    User createUser(User user);
-    Optional<User> getUserById(Long id);
-    Optional<User> getUserByUuid(String uuid);
-    List<User> getAllActiveUsers();
-    User updateUser(Long id, User user);
-    void softDeleteUser(Long id);
+    Map<String, Object> createUser(UserRequestDTO requestDTO);
+    Optional<Map<String, Object>> getUserById(Long id);
+    Optional<Map<String, Object>> getUserByUuid(String uuid);
+    List<Map<String, Object>> getAllActiveUsers();
+    Map<String, Object> updateUser(Long id, UserRequestDTO requestDTO);
+    void softDeleteUser(Long id, Long userId);
 }
